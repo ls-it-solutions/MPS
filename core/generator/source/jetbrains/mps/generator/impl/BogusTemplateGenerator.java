@@ -75,6 +75,12 @@ import java.util.List;
 
   @Nullable
   @Override
+  public SNode findOutputNodeByComparableInputNodeAndMappingName(@NotNull Comparable<SNode> comparable, @Nullable String mappingName) {
+    return null;
+  }
+
+  @Nullable
+  @Override
   public SNode findOutputNodeByInputNodeAndMappingName(SNode inputNode, @Nullable String mappingName) {
     throw new UnsupportedOperationException();
   }

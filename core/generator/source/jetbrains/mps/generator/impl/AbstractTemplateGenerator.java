@@ -24,6 +24,7 @@ import jetbrains.mps.generator.impl.query.GeneratorQueryProvider.Source;
 import jetbrains.mps.generator.runtime.TemplateContext;
 import jetbrains.mps.generator.template.ITemplateGenerator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.language.SContainmentLink;
 import org.jetbrains.mps.openapi.language.SReferenceLink;
 import org.jetbrains.mps.openapi.model.SModel;
@@ -102,6 +103,20 @@ public abstract class AbstractTemplateGenerator implements ITemplateGenerator {
 
   public SNode findOutputNodeByTemplateNodeUnique(String templateNode) {
     return myMappings.findOutputNodeByTemplateNodeUnique(templateNode);
+  }
+  /**
+   * For the mapping label the comparable decides if the key is in the keySet.
+   * If so, the key will be used to return the value.
+   * This is specially useful if the comparable might be equivalent to a search key,
+   * which is produced on demand
+   * @param comparable
+   * @param mappingName
+   * @return output if the key could be found with the help of the comparator
+   */
+  @Nullable
+  @Override
+  public SNode findOutputNodeByComparableInputNodeAndMappingName(@NotNull Comparable<SNode> comparable, @Nullable String mappingName){
+    return myMappings.findOutputNodeByComparableInputNodeAndMappingName(comparable, mappingName);
   }
 
   @Override

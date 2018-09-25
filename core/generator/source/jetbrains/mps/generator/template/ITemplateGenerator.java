@@ -19,6 +19,7 @@ import jetbrains.mps.generator.GenerationSessionContext;
 import jetbrains.mps.generator.IGeneratorLogger;
 import jetbrains.mps.generator.impl.query.GeneratorQueryProvider;
 import jetbrains.mps.util.annotation.ToRemove;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNode;
@@ -41,6 +42,18 @@ public interface ITemplateGenerator extends GeneratorQueryProvider.Source {
   boolean areMappingsAvailable();
 
   void registerMappingLabel(SNode inputNode, String mappingName, SNode outputNode);
+
+  /**
+   * For the mapping label the comparable decides if the key is in the keySet.
+   * If so, the key will be used to return the value.
+   * This is specially useful if the comparable might be equivalent to a search key,
+   * which is produced on demand
+   * @param comparable
+   * @param mappingName
+   * @return output if the key could be found with the help of the comparator
+   */
+  @Nullable
+  SNode findOutputNodeByComparableInputNodeAndMappingName(@NotNull Comparable<SNode> comparable, @Nullable String mappingName);
 
   /**
    * @param inputNode node from almost any model that may have served as an input for a generator. We tolerate null value now, indicating

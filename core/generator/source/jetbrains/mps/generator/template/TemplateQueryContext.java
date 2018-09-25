@@ -119,6 +119,10 @@ public class TemplateQueryContext {
     return myGenerator.findOutputNode(inputModel, label);
   }
 
+  @Nullable
+  public SNode getOutputNodeByComparableInputNodeAndMappingLabel(@NotNull Comparable<SNode> inputNode, @NotNull String label) {
+    return myGenerator.findOutputNodeByComparableInputNodeAndMappingName(inputNode, label);
+  }
   public SNode getOutputNodeByInputNodeAndMappingLabel(SNode inputNode, String label) {
     if (inputNode == null) return null;
     if (!myGenerator.areMappingsAvailable()) {

@@ -35,6 +35,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -190,6 +191,27 @@ public final class GeneratorMappings {
     }
 
     return (SNode) o;
+  }
+
+  /**
+   * For the mapping label the comparable decides if the key is in the keySet.
+   * If so, the key will be used to return the value.
+   * This is specially useful if the comparable might be equivalent to a search key,
+   * which is produced on demand
+   * @param comparable
+   * @param mappingName
+   * @return output if the key could be found with the help of the comparator
+   */
+  public SNode findOutputNodeByComparableInputNodeAndMappingName(@NotNull Comparable<SNode> comparable, @Nullable String mappingName){
+    Map<SNode, Object> currentMapping = myMappingNameAndInputNodeToOutputNodeMap.get(mappingName);
+    if (currentMapping == null) {
+      return null;
+    }
+    Optional<SNode> foundInput = currentMapping.keySet().parallelStream().filter(labeledOne -> comparable.compareTo(labeledOne)==0).findFirst();
+    if(foundInput.isPresent()){
+      return (SNode) currentMapping.get(foundInput.get());
+    }
+    return null;
   }
 
   public List<SNode> findAllOutputNodesByInputNodeAndMappingName(SNode inputNode, String mappingName) {
