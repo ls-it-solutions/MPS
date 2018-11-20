@@ -258,17 +258,9 @@ public class Script {
   }
 
   private static File createTmpFile() {
-    File tmp = new File(System.getProperty("java.io.tmpdir"));
-    int i = 0;
-    while (true) {
-      if (!(new File(tmp, "mpstemp" + i).exists())) {
-        break;
-      }
-      i++;
-    }
-    File result = new File(tmp, "mpstemp" + i);
+    File result = null;
     try {
-      result.createNewFile();
+      result = File.createTempFile("mpstemp", "");
     } catch (IOException e) {
       e.printStackTrace();
     }
