@@ -25,6 +25,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -92,20 +93,22 @@ public class IFileUtils {
     return jarFile.getFileSystem().getFile(jarFile.getPath() + JAR_SEPARATOR); // the reason of this juggling is specifically our IoFileSystem
   }
 
+  /**
+   * creates a temporary directory using {@link FileUtil#createTmpDir(String)} with mps-yyyyy-MM-dd- as prefix
+   * @return freshly created tmpDir with prefix
+   * @throws IllegalStateException if tmpDir.getCanonicalPath throws IOException
+   */
   public static IFile createTmpDir() {
-    IFile tmpHome = FileSystem.getInstance().getFile(System.getProperty("java.io.tmpdir"));
-    // For e.g. Mac, tmpdir might reside under /var/folders, with canonical path /private/var/folders
-    // IDEA's VirtualFile seems to be incapable to notice changes done through other location, which may lead to
-    // puzzling failures (i.e. U see the file at fs location, but VirtualFile for the same (though, aliased) location doesn't list it).
-    tmpHome = FileSystem.getInstance().getFile(getCanonicalPath(tmpHome));
-    int i = 1;
+    IFile result;
     String prefix = "mps-" + new SimpleDateFormat("yyyy-MM-dd-").format(new Date());
-    while (tmpHome.getDescendant(prefix + i).exists()) {
-      i++;
+    File tmpDir = FileUtil.createTmpDir(prefix);
+    String canonicalPath = null;
+    try {
+      canonicalPath = tmpDir.getCanonicalPath();
+      result = FileSystem.getInstance().getFile(canonicalPath);
+    } catch (IOException e) {
+      throw new IllegalStateException(String.format("Could not create a temporary directory with prefix %1$s", prefix), e);
     }
-
-    IFile result = tmpHome.getDescendant(prefix + i);
-    result.mkdirs();
     return result;
   }
 
