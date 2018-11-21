@@ -57,6 +57,7 @@ import jetbrains.mps.smodel.CopyUtil;
 import jetbrains.mps.smodel.DynamicReference;
 import jetbrains.mps.smodel.FastNodeFinderManager;
 import jetbrains.mps.smodel.ModelDependencyUpdate;
+import jetbrains.mps.smodel.SModelInternal;
 import jetbrains.mps.smodel.StaticReference;
 import jetbrains.mps.textgen.trace.TracingUtil;
 import jetbrains.mps.util.SNodeOperations;
@@ -75,6 +76,7 @@ import org.jetbrains.mps.openapi.model.SNodeId;
 import org.jetbrains.mps.openapi.model.SNodeReference;
 import org.jetbrains.mps.openapi.model.SNodeUtil;
 import org.jetbrains.mps.openapi.model.SReference;
+import org.jetbrains.mps.openapi.module.SRepository;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 import org.jetbrains.mps.util.DescendantsTreeIterator;
 
@@ -87,6 +89,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by: Sergey Dmitriev
@@ -576,6 +579,34 @@ public class TemplateGenerator extends AbstractTemplateGenerator {
     CheckpointIdentity cpId = targetPoint.getIdentity();
     SNode output = modelCheckpoints.findTransformedNode(cpId, inputNode, mappingName);
     return output;
+  }
+
+  @Override
+  public List<SNode> findAllOutputNodesByInputNodeAndMappingName(SNode inputNode, String mappingName) {
+    List<SNode> allOutputNodesByInputNodeAndMappingName = super.findAllOutputNodesByInputNodeAndMappingName(inputNode, mappingName);
+    final CrossModelEnvironment crossModelEnvironment = getGeneratorSessionContext().getCrossModelEnvironment();
+    final SRepository sRepository = this.getGeneratorSessionContext().getRepository();
+
+    List<SNode> crossModelList = ((SModelInternal) myInputModel)
+                              .getModelImports()
+                              .stream()
+                              .map(reference -> {
+                                SModel resolvedModel = reference.resolve(sRepository);
+                                ModelCheckpoints modelCheckpoints = crossModelEnvironment.getState(resolvedModel);
+                                Collection<SNode> result;
+                                if (modelCheckpoints != null) {
+                                  result = modelCheckpoints.getOutputsFromAllCheckpointStates(mappingName, inputNode);
+                                } else {
+                                  result = Collections.EMPTY_LIST;
+                                }
+                                return result;
+                              })
+                              .flatMap(Collection::stream)
+                              .collect(Collectors.toList());
+    if(allOutputNodesByInputNodeAndMappingName !=null){
+      crossModelList.addAll(allOutputNodesByInputNodeAndMappingName);
+    }
+    return crossModelList;
   }
 
   private CheckpointState findMatchingStateFor(/*non-null*/SModel model) {

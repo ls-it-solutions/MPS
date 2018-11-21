@@ -240,4 +240,19 @@ public class ModelCheckpoints {
       }
     }
   }
+  /**
+   * collect from all states the outputs matching the mappingLabel and inputNode
+   * @param mappingLabel the mapping label to search the input nodes output
+   * @param inputNode the input node
+   * @return the output nodes for the input node from all checkpoints
+   */
+  public Collection<SNode> getOutputsFromAllCheckpointStates(String mappingLabel, SNode inputNode) {
+    return myStates.stream().map(cps -> {
+         try {
+             return cps.getOutput(mappingLabel, inputNode);
+           } catch (AssertionError ae) {
+             return new ArrayList<SNode>();
+           }
+       }).flatMap(Collection::stream).collect(Collectors.toList());
+    }
 }
