@@ -35,11 +35,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -194,24 +195,32 @@ public final class GeneratorMappings {
   }
 
   /**
-   * For the mapping label the comparable decides if the key is in the keySet.
-   * If so, the key will be used to return the value.
-   * This is specially useful if the comparable might be equivalent to a search key,
+   * For the mapping label the sNodePredicate decides if the input node is in the keySet.
+   * If so, the input node will be used to get the list of output nodes.
+   * This is specially useful if the sNodePredicate might be equivalent to a search key,
    * which is produced on demand
-   * @param comparable
-   * @param mappingName
-   * @return output if the key could be found with the help of the comparator
+   * @param sNodePredicate a predicate to filter the nodes
+   * @param mappingName the mapping label name
+   * @return list of output nodes with their input node satisfying the predicate from the mapping label
    */
-  public SNode findOutputNodeByComparableInputNodeAndMappingName(@NotNull Comparable<SNode> comparable, @Nullable String mappingName){
+  public List<SNode> findOutputNodeByPredicateInputNodeAndMappingName(@NotNull Predicate<SNode> sNodePredicate, @Nullable String mappingName) {
     Map<SNode, Object> currentMapping = myMappingNameAndInputNodeToOutputNodeMap.get(mappingName);
     if (currentMapping == null) {
       return null;
     }
-    Optional<SNode> foundInput = currentMapping.keySet().parallelStream().filter(labeledOne -> comparable.compareTo(labeledOne)==0).findFirst();
-    if(foundInput.isPresent()){
-      return (SNode) currentMapping.get(foundInput.get());
-    }
-    return null;
+    List<SNode> result;
+    List<SNode> foundInputList = currentMapping
+                                     .keySet()
+                                     .parallelStream()
+                                     .filter(labeledNode -> sNodePredicate.test(labeledNode))
+                                     .collect(Collectors.toList());
+    List<SNode> combinedOutputList = foundInputList
+                                         .parallelStream()
+                                         .map(currentMapping::get)
+                                         .map(GeneratorMappings::getOutputList)
+                                         .collect((Supplier<List<SNode>>) ArrayList::new, List::addAll, List::addAll);
+    result = combinedOutputList;
+    return result;
   }
 
   public List<SNode> findAllOutputNodesByInputNodeAndMappingName(SNode inputNode, String mappingName) {
@@ -222,14 +231,18 @@ public final class GeneratorMappings {
     if (currentMapping == null) {
       return null;
     }
-    Object o = currentMapping.get(inputNode);
-    if (o == null) {
+    return getOutputList(currentMapping.get(inputNode));
+  }
+
+  @NotNull
+  private static List<SNode> getOutputList(Object foundOutput) {
+    if (foundOutput == null) {
       return Collections.emptyList();
     }
-    if (o instanceof List) {
-      return ((List<SNode>) o);
+    if (foundOutput instanceof List) {
+      return ((List<SNode>) foundOutput);
     }
-    return Collections.singletonList((SNode) o);
+    return Collections.singletonList((SNode) foundOutput);
   }
 
   public SNode findCopiedOutputNodeForInputNode(@NotNull SNode inputNode) {

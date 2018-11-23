@@ -27,6 +27,7 @@ import org.jetbrains.mps.openapi.model.SNodeReference;
 import org.jetbrains.mps.openapi.module.SRepository;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Context for operations of genContext parameter in generator's concept functions. This is what generated code of template queries (like input nodes query,
@@ -120,8 +121,8 @@ public class TemplateQueryContext {
   }
 
   @Nullable
-  public SNode getOutputNodeByComparableInputNodeAndMappingLabel(@NotNull Comparable<SNode> inputNode, @NotNull String label) {
-    return myGenerator.findOutputNodeByComparableInputNodeAndMappingName(inputNode, label);
+  public List<SNode> getOutputNodeByPredicateInputNodeAndMappingLabel(@NotNull Predicate<SNode> sNodePredicate, @NotNull String label) {
+    return myGenerator.findOutputNodeByPredicateInputNodeAndMappingName(sNodePredicate, label);
   }
   public SNode getOutputNodeByInputNodeAndMappingLabel(SNode inputNode, String label) {
     if (inputNode == null) return null;

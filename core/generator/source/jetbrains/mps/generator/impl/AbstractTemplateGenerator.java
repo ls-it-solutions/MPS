@@ -34,6 +34,7 @@ import org.jetbrains.mps.openapi.model.SNodeReference;
 import org.jetbrains.mps.openapi.util.ProgressMonitor;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public abstract class AbstractTemplateGenerator implements ITemplateGenerator {
 
@@ -105,18 +106,18 @@ public abstract class AbstractTemplateGenerator implements ITemplateGenerator {
     return myMappings.findOutputNodeByTemplateNodeUnique(templateNode);
   }
   /**
-   * For the mapping label the comparable decides if the key is in the keySet.
-   * If so, the key will be used to return the value.
-   * This is specially useful if the comparable might be equivalent to a search key,
+   * For the mapping label the sNodePredicate decides if the input node is in the keySet.
+   * If so, the input node will be used to get the list of output nodes.
+   * This is specially useful if the sNodePredicate might be equivalent to a search key,
    * which is produced on demand
-   * @param comparable
-   * @param mappingName
-   * @return output if the key could be found with the help of the comparator
+   * @param sNodePredicate a predicate to filter the nodes
+   * @param mappingName the mapping label name
+   * @return list of output nodes with their input node satisfying the predicate from the mapping label
    */
   @Nullable
   @Override
-  public SNode findOutputNodeByComparableInputNodeAndMappingName(@NotNull Comparable<SNode> comparable, @Nullable String mappingName){
-    return myMappings.findOutputNodeByComparableInputNodeAndMappingName(comparable, mappingName);
+  public List<SNode> findOutputNodeByPredicateInputNodeAndMappingName(@NotNull Predicate<SNode> sNodePredicate, @Nullable String mappingName){
+    return myMappings.findOutputNodeByPredicateInputNodeAndMappingName(sNodePredicate, mappingName);
   }
 
   @Override

@@ -26,6 +26,7 @@ import org.jetbrains.mps.openapi.model.SNode;
 import org.jetbrains.mps.openapi.model.SNodeReference;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Ths only purpose of this ITemplateGenerator implementation is to satisfy TemplateMappingConfiguration.isApplicable without
@@ -75,7 +76,7 @@ import java.util.List;
 
   @Nullable
   @Override
-  public SNode findOutputNodeByComparableInputNodeAndMappingName(@NotNull Comparable<SNode> comparable, @Nullable String mappingName) {
+  public List<SNode> findOutputNodeByPredicateInputNodeAndMappingName(@NotNull Predicate<SNode> sNodePredicate, @Nullable String mappingName) {
     return null;
   }
 

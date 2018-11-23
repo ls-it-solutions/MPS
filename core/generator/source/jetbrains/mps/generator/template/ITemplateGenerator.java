@@ -25,6 +25,7 @@ import org.jetbrains.mps.openapi.model.SModel;
 import org.jetbrains.mps.openapi.model.SNode;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 public interface ITemplateGenerator extends GeneratorQueryProvider.Source {
 
@@ -44,16 +45,16 @@ public interface ITemplateGenerator extends GeneratorQueryProvider.Source {
   void registerMappingLabel(SNode inputNode, String mappingName, SNode outputNode);
 
   /**
-   * For the mapping label the comparable decides if the key is in the keySet.
-   * If so, the key will be used to return the value.
-   * This is specially useful if the comparable might be equivalent to a search key,
+   * For the mapping label the sNodePredicate decides if the input node is in the keySet.
+   * If so, the input node will be used to get the list of output nodes.
+   * This is specially useful if the sNodePredicate might be equivalent to a search key,
    * which is produced on demand
-   * @param comparable
-   * @param mappingName
-   * @return output if the key could be found with the help of the comparator
+   * @param sNodePredicate a predicate to filter the nodes
+   * @param mappingName the mapping label name
+   * @return list of output nodes with their input node satisfying the predicate from the mapping label
    */
   @Nullable
-  SNode findOutputNodeByComparableInputNodeAndMappingName(@NotNull Comparable<SNode> comparable, @Nullable String mappingName);
+  List<SNode> findOutputNodeByPredicateInputNodeAndMappingName(@NotNull Predicate<SNode> sNodePredicate, @Nullable String mappingName);
 
   /**
    * @param inputNode node from almost any model that may have served as an input for a generator. We tolerate null value now, indicating
