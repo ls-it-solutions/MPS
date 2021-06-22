@@ -263,33 +263,33 @@ public class LegacyTypecheckingProvider implements TypecheckingProvider<LegacyTy
       private Set<TypeInvalidationListener> myTypeInvalidationListeners = new THashSet<>();
 
       @Override
-      public void addTypeAccessListener(TypeAccessListener listener) {
+      public synchronized void addTypeAccessListener(TypeAccessListener listener) {
         myTypeAccessListeners.add(listener);
       }
 
       @Override
-      public void removeTypeAccessListener(TypeAccessListener listener) {
+      public synchronized void removeTypeAccessListener(TypeAccessListener listener) {
         myTypeAccessListeners.remove(listener);
       }
 
       @Override
-      public void addTypeInvalidationListener(TypeInvalidationListener listener) {
+      public synchronized void addTypeInvalidationListener(TypeInvalidationListener listener) {
         myTypeInvalidationListeners.add(listener);
       }
 
       @Override
-      public void removeTypeInvalidationListener(TypeInvalidationListener listener) {
+      public synchronized void removeTypeInvalidationListener(TypeInvalidationListener listener) {
         myTypeInvalidationListeners.remove(listener);
       }
 
-      private void dispatchTypeAccessed(SNode expression) {
+      private synchronized void dispatchTypeAccessed(SNode expression) {
         ArrayList<TypeAccessListener> listeners = new ArrayList<>(myTypeAccessListeners);
         for (TypeAccessListener listener : listeners) {
           listener.typeAccessed(expression);
         }
       }
 
-      private void dispatchTypeInvalidated(SNode expression) {
+      private synchronized void dispatchTypeInvalidated(SNode expression) {
         ArrayList<TypeInvalidationListener> listeners = new ArrayList<>(myTypeInvalidationListeners);
         for (TypeInvalidationListener listener : listeners) {
           listener.typeInvalidated(expression);
