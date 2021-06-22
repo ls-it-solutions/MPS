@@ -302,7 +302,16 @@ public class PersistenceRegistry extends org.jetbrains.mps.openapi.persistence.P
 
   @Override
   public Set<FindUsagesParticipant> getFindUsagesParticipants() {
-    return isDisabled ? Collections.emptySet() : Collections.unmodifiableSet(myFindUsagesParticipants);
+    if (isDisabled) {
+      return  Collections.emptySet();
+    } else {
+      LinkedHashSet<FindUsagesParticipant> copy = new LinkedHashSet<>();
+      // forEach() ensures synchronized access! Don't want to synchronize explicitly
+      // over iterator and imply mutex is the same as the collection (although this is what javadoc suggests)
+      //noinspection UseBulkOperation
+      myFindUsagesParticipants.forEach(copy::add);
+      return copy;
+    }
   }
 
   public boolean isFastSearch() {
