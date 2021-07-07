@@ -66,11 +66,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class IncrementalTypechecking extends ReportingTypechecking<State, TypeSystemComponent> {
 
-  private List<SModelEvent> myEvents = new ArrayList<>();
-  private List<SModel> myReplacedModels = new ArrayList<>();
+  private ConcurrentLinkedQueue<SModelEvent> myEvents = new ConcurrentLinkedQueue<>();
+  private ConcurrentLinkedQueue<SModel> myReplacedModels = new ConcurrentLinkedQueue<>();
 
   private DeployListener myClassesListener = new DeployListener() {
     @Override
@@ -299,16 +300,14 @@ public class IncrementalTypechecking extends ReportingTypechecking<State, TypeSy
 
   private void processPendingEvents() {
     final MySModelEventVisitorAdapter visitor = new MySModelEventVisitorAdapter();
-    for (SModelEvent event : myEvents) {
+    for (SModelEvent event = myEvents.poll(); event !=  null; event = myEvents.poll()) {
       event.accept(visitor);
     }
-    for (SModel replacedModel : myReplacedModels) {
+    for (SModel replacedModel = myReplacedModels.poll(); replacedModel != null; replacedModel = myReplacedModels.poll()) {
       for (SNode node : mySModelNodes.get(replacedModel)) {
         visitor.markInvalid(node);
       }
     }
-    myReplacedModels.clear();
-    myEvents.clear();
   }
 
   public void track(SNode node) {
