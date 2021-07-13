@@ -31,7 +31,6 @@ import jetbrains.mps.ide.tools.BaseTool;
 import jetbrains.mps.nodeEditor.highlighter.EditorsHelper;
 import jetbrains.mps.plugins.BasePluginManager;
 import jetbrains.mps.plugins.PluginContributor;
-import jetbrains.mps.plugins.PluginLoaderRegistry;
 import jetbrains.mps.plugins.prefs.BaseProjectPrefsComponent;
 import jetbrains.mps.plugins.projectplugins.BaseProjectPlugin.PluginState;
 import jetbrains.mps.plugins.projectplugins.ProjectPluginManager.PluginsState;
@@ -69,8 +68,7 @@ public class ProjectPluginManager extends BasePluginManager<BaseProjectPlugin> i
     return ideaProject.getComponent(ProjectPluginManager.class);
   }
 
-  public ProjectPluginManager(@NotNull Project project, PluginLoaderRegistry pluginLoaderRegistry) {
-    super(pluginLoaderRegistry);
+  public ProjectPluginManager(@NotNull Project project) {
     myProject = project;
     myMpsProject = ProjectHelper.fromIdeaProject(project);
   }

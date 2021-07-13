@@ -95,6 +95,10 @@ public class PluginLoaderRegistry implements Disposable {
   private final AtomicBoolean myUpdateIsScheduledInEDT = new AtomicBoolean(false);
   private final AtomicBoolean myAppInitialized = new AtomicBoolean();
 
+  public static PluginLoaderRegistry getInstance() {
+    return ApplicationManager.getApplication().getComponent(PluginLoaderRegistry.class);
+  }
+
   public PluginLoaderRegistry() {
     // FIXME Now, PluginLoaderRegistry is app component. Seems easy to convert to a
     //       service, however, doesn't make too much sense unless we convert
