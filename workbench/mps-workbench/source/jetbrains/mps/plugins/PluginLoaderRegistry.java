@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2018 JetBrains s.r.o.
+ * Copyright 2003-2021 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,33 +26,27 @@ import com.intellij.openapi.progress.ProcessCanceledException;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
-import com.intellij.openapi.progress.Task.Backgroundable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.openapi.wm.ex.WindowManagerEx;
 import com.intellij.openapi.wm.impl.ProjectFrameHelper;
-import com.intellij.util.xmlb.BeanBinding;
 import jetbrains.mps.classloading.ClassLoaderManager;
 import jetbrains.mps.classloading.DeployListener;
 import jetbrains.mps.classloading.ModuleClassLoader;
 import jetbrains.mps.core.platform.Platform;
 import jetbrains.mps.ide.MPSCoreComponents;
 import jetbrains.mps.ide.ThreadUtils;
-import jetbrains.mps.make.MakeServiceComponent;
 import jetbrains.mps.module.ReloadableModule;
 import jetbrains.mps.plugins.PluginLoaderRegistry.EventAccumulation.Snapshot;
 import jetbrains.mps.plugins.applicationplugins.BaseApplicationPlugin;
 import jetbrains.mps.plugins.projectplugins.BaseProjectPlugin;
-import jetbrains.mps.plugins.projectplugins.ProjectPluginManager;
 import jetbrains.mps.progress.EmptyProgressMonitor;
 import jetbrains.mps.project.Solution;
 import jetbrains.mps.project.structure.modules.SolutionKind;
 import jetbrains.mps.smodel.Language;
 import jetbrains.mps.smodel.MPSModuleRepository;
 import jetbrains.mps.util.JavaNameUtil;
-import jetbrains.mps.util.annotation.Hack;
-import jetbrains.mps.util.annotation.ToRemove;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -91,7 +85,6 @@ public class PluginLoaderRegistry implements Disposable {
   private static final Logger LOG = Logger.getLogger(PluginLoaderRegistry.class);
 
   private final ClassLoaderManager myClassLoaderManager;
-  private final MakeServiceComponent myMakeComponent;
   private final ModelAccess myModelAccess;
 
   private final DeployListener myClassesListener = new SchedulingUpdateListener();
@@ -102,13 +95,21 @@ public class PluginLoaderRegistry implements Disposable {
   private final AtomicBoolean myUpdateIsScheduledInEDT = new AtomicBoolean(false);
   private final AtomicBoolean myAppInitialized = new AtomicBoolean();
 
-  public PluginLoaderRegistry(MPSCoreComponents coreComponents) {
+  public PluginLoaderRegistry() {
+    // FIXME Now, PluginLoaderRegistry is app component. Seems easy to convert to a
+    //       service, however, doesn't make too much sense unless we convert
+    //       ApplicationPluginManager and ProjectPluginManager as well.
+    //       Switching to extension points for these managers might be an option
+    //       although I don't clearly see how to approach per-project PPM and app-wide
+    //       APM in a single extpoint (two would be too much, imo).
+    // Note, registerAppInitListener fits service story quite well - it would be the
+    // listener to activate PLR service by issuing an update.
+    MPSCoreComponents coreComponents = MPSCoreComponents.getInstance();
     Platform mpsPlatform = coreComponents.getPlatform();
     myClassLoaderManager = mpsPlatform.findComponent(ClassLoaderManager.class);
     SRepository repo = mpsPlatform.findComponent(MPSModuleRepository.class);
     assert repo != null;
     myModelAccess = repo.getModelAccess();
-    myMakeComponent = mpsPlatform.findComponent(MakeServiceComponent.class);
 
     myClassLoaderManager.addListener(myClassesListener);
     registerAppInitListener();
@@ -183,16 +184,7 @@ public class PluginLoaderRegistry implements Disposable {
   public void register(@NotNull final PluginLoader loader) {
     LOG.debug("Registering the " + loader);
     myLoaderDelta.load(Collections.singleton(loader));
-    removeIfProjectIsLoader(loader);
     update();
-  }
-
-  @ToRemove(version = 193)
-  @Hack
-  private void removeIfProjectIsLoader(@NotNull PluginLoader loader) {
-    if (loader instanceof ProjectPluginManager) {
-      update();
-    }
   }
 
   /**

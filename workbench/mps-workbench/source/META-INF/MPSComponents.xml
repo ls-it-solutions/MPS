@@ -102,7 +102,6 @@
       <implementation-class>jetbrains.mps.ide.editor.tabs.FileStatusChangeListener</implementation-class>
     </component>
 
-    <!-- typesystem -->
     <component>
       <implementation-class>jetbrains.mps.plugins.projectplugins.ProjectPluginManager</implementation-class>
     </component>
