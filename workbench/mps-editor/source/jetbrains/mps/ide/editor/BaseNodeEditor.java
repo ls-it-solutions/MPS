@@ -303,6 +303,9 @@ public abstract class BaseNodeEditor implements Editor {
     executeInEDT(new PrioritizedTask(TaskType.INSPECTOR_MEMENTO, myType2TaskMap) {
       @Override
       public void performTask() {
+        if (editorComponent.isDisposed()) {
+          return;
+        }
         inspectorEditorContext.restoreEditorComponentState(s.inspectorMemento);
         inspectorEditorComponent.getFocusTracker().setEffectiveFocusState(s.isInspectorFocused);
         if (s.isInspectorFocused && focusManager != null) {
