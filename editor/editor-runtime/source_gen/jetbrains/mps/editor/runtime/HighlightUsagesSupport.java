@@ -19,13 +19,16 @@ import com.intellij.openapi.editor.colors.EditorColorsManager;
 import jetbrains.mps.openapi.editor.selection.Selection;
 import jetbrains.mps.openapi.editor.cells.EditorCell;
 import java.util.concurrent.TimeUnit;
-import org.jetbrains.mps.openapi.model.SNode;
-import jetbrains.mps.nodeEditor.cells.APICellAdapter;
 import jetbrains.mps.nodeEditor.NodeHighlightManager;
-import org.jetbrains.mps.openapi.module.SearchScope;
-import jetbrains.mps.ide.findusages.model.scopes.ModelsScope;
 import java.util.Set;
 import org.jetbrains.mps.openapi.model.SReference;
+import java.util.HashSet;
+import org.jetbrains.mps.openapi.model.SNode;
+import jetbrains.mps.nodeEditor.cells.APICellAdapter;
+import jetbrains.mps.util.CollectConsumer;
+import org.jetbrains.mps.openapi.util.Consumer;
+import org.jetbrains.mps.openapi.module.SearchScope;
+import jetbrains.mps.ide.findusages.model.scopes.ModelsScope;
 import org.jetbrains.mps.openapi.module.FindUsagesFacade;
 import java.util.Collections;
 import jetbrains.mps.internal.collections.runtime.SetSequence;
@@ -44,7 +47,7 @@ public class HighlightUsagesSupport {
   private final SRepository myRepository;
   private final DumbService myDumbService;
 
-  private long defaultUpdateDelayMillis = 500;
+  private long defaultUpdateDelayMillis = 250;
   private ScheduledFuture<?> highlightTask;
 
   public static HighlightUsagesSupport create(@NotNull EditorComponent ec, @Nullable SRepository repository) {
@@ -90,21 +93,9 @@ public class HighlightUsagesSupport {
       }
       highlightTask = scheduler.schedule(new Runnable() {
         public void run() {
-          myRepository.getModelAccess().runReadInEDT(new Runnable() {
-            public void run() {
-              highlight(selectedCell);
-            }
-          });
+          highlightUsages(selectedCell);
         }
       }, updateDelayMillis, TimeUnit.MILLISECONDS);
-    }
-  }
-
-  private void highlight(@NotNull EditorCell selectedCell) {
-    clearMarks();
-    SNode nodeToHighlight = APICellAdapter.getSNodeWRTReference(selectedCell);
-    if (nodeToHighlight != null) {
-      highlight(nodeToHighlight, selectedCell.getSNode());
     }
   }
 
@@ -113,26 +104,63 @@ public class HighlightUsagesSupport {
     hm.clearForOwner(emo);
   }
 
-  private void highlight(@NotNull SNode nodeToHighlight, @Nullable SNode selectedCellNode) {
+  private void highlightUsages(@NotNull final EditorCell selectedCell) {
     if (myDumbService.isDumb()) {
       return;
     }
-    NodeHighlightManager hm = myEC.getHighlightManager();
-    EditorMessageOwner highlightMessagesOwner = myEC.getHighlightMessagesOwner();
+    final Set<SReference> refs = new HashSet<>();
+    myRepository.getModelAccess().runReadAction(new Runnable() {
+      public void run() {
+        final SNode nodeToHighlight = APICellAdapter.getSNodeWRTReference(selectedCell);
+        if (nodeToHighlight == null) {
+          return;
+        }
+        collectUsages(nodeToHighlight, new CollectConsumer<>(refs));
+        myRepository.getModelAccess().runReadInEDT(new Runnable() {
+          public void run() {
+            EditorCell currentlySelectedCell = myEC.getSelectedCell();
+            if (selectedCell == currentlySelectedCell) {
+              markUsages(selectedCell.getSNode(), nodeToHighlight, refs);
+            }
+          }
+        });
+      }
+    });
+  }
 
+  private void collectUsages(@NotNull SNode nodeToHighlight, Consumer<SReference> consumer) {
+    SNode editedRoot = getEditedRoot();
+    if (editedRoot != null) {
+      SearchScope scope = new ModelsScope(editedRoot.getModel());
+      FindUsagesFacade.getInstance().findUsages(scope, Collections.singleton(nodeToHighlight), consumer, null);
+    }
+  }
+
+  @Nullable
+  private SNode getEditedRoot() {
     jetbrains.mps.nodeEditor.cells.EditorCell rootCell = myEC.getRootCell();
     if (rootCell == null) {
-      return;
+      return null;
     }
     SNode node = rootCell.getSNode();
     if (node == null) {
+      return null;
+    }
+    return node.getContainingRoot();
+  }
+
+  private void markUsages(@NotNull SNode selectedCellNode, @NotNull SNode nodeToHighlight, @NotNull Set<SReference> usages) {
+    clearMarks();
+
+    if (usages.isEmpty()) {
       return;
     }
-    SNode editedRoot = node.getContainingRoot();
-    SNode highlightingRoot = nodeToHighlight.getContainingRoot();
 
-    SearchScope scope = new ModelsScope(editedRoot.getModel());
-    Set<SReference> usages = FindUsagesFacade.getInstance().findUsages(scope, Collections.singleton(nodeToHighlight), null);
+    NodeHighlightManager hm = myEC.getHighlightManager();
+    EditorMessageOwner highlightMessagesOwner = myEC.getHighlightMessagesOwner();
+
+    SNode editedRoot = getEditedRoot();
+    SNode highlightingRoot = nodeToHighlight.getContainingRoot();
 
     for (SReference ref : SetSequence.fromSet(usages)) {
       SNode referenceNode = ref.getSourceNode();
