@@ -1,5 +1,5 @@
 /*
- * Copyright 2003-2019 JetBrains s.r.o.
+ * Copyright 2003-2021 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,11 @@ import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileEvent;
-import com.intellij.openapi.vfs.VirtualFileListener;
-import com.intellij.openapi.vfs.VirtualFilePropertyEvent;
-import com.intellij.openapi.vfs.impl.BulkVirtualFileListenerAdapter;
 import com.intellij.util.messages.MessageBusConnection;
+import jetbrains.mps.nodefs.NodeFileEventListener;
 import jetbrains.mps.nodefs.NodeVirtualFileSystem;
-import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 
 /**
  * FIXME: MPSNodesVirtualFileSystem listens to node deletion and rename, why doesn't it send out file changed events as well, why do we
@@ -36,7 +34,7 @@ import org.jetbrains.annotations.NotNull;
 public class NodeIconUpdater implements ProjectComponent {
   private final Project myProject;
   private final FileEditorManagerEx myFileEditorManagerEx;
-  private final VirtualFileListener myFileListener;
+  private final NodeFileEventListener myFileListener;
 
   public NodeIconUpdater(Project project) {
     myProject = project;
@@ -44,20 +42,15 @@ public class NodeIconUpdater implements ProjectComponent {
     // TODO Would be more effective to be an ApplicationComponent and listen to bulk changes (BulkFileListener)
     // however, there's no way to find out MPSProject from MPSNodeVirtualFile at the moment, and without a project
     // can't access FileEditorManagerEx.
-    myFileListener = new VirtualFileListener() {
+    myFileListener = new NodeFileEventListener() {
       @Override
-      public void propertyChanged(@NotNull VirtualFilePropertyEvent event) {
-        refresh(event.getFile());
+      public void changed(Collection<VirtualFile> vf) {
+        vf.forEach(NodeIconUpdater.this::refresh);
       }
 
       @Override
-      public void contentsChanged(@NotNull VirtualFileEvent event) {
-        refresh(event.getFile());
-      }
-
-      @Override
-      public void beforeFileDeletion(@NotNull VirtualFileEvent event) {
-        myFileEditorManagerEx.closeFile(event.getFile());
+      public void beforeDelete(Collection<VirtualFile> vf) {
+        vf.forEach(myFileEditorManagerEx::closeFile);
       }
     };
   }
@@ -68,7 +61,7 @@ public class NodeIconUpdater implements ProjectComponent {
       return;
     }
     final MessageBusConnection conn = myProject.getMessageBus().connect(myProject);
-    conn.subscribe(NodeVirtualFileSystem.NODE_FS_CHANGES, new BulkVirtualFileListenerAdapter(myFileListener));
+    conn.subscribe(NodeVirtualFileSystem.NODE_FS_CHANGES, myFileListener);
   }
 
   @Override
