@@ -97,9 +97,6 @@ In MPS sources some run configurations override this path by setting 'idea.log.p
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d [%7r] %6p - %30.60c - %m \n"/>
     </layout>
-    <filter class="org.apache.log4j.varia.LevelRangeFilter">
-      <param name="LevelMin" value="INFO"/>
-    </filter>
   </appender>
 
   <!-- Log all events to continuous.log file. Note that file is overridden on each application start -->
