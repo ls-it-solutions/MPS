@@ -49,6 +49,7 @@ import com.intellij.util.ui.UIUtil;
 import jetbrains.mps.ide.IdeBundle;
 import jetbrains.mps.ide.blame.api.Reporter;
 import jetbrains.mps.util.annotation.ToRemove;
+import org.jetbrains.annotations.ApiStatus.ScheduledForRemoval;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -410,6 +411,7 @@ public class BlameDialog extends DialogWrapper {
     private enum Format {
       HTML(END_LINE_HTML, BOLD_START_HTML, BOLD_END_HTML, ITALIC_START_HTML, ITALIC_END_HTML),
       MARK_DOWN(END_LINE_MARKDOWN, BOLD_MARKDOWN, BOLD_MARKDOWN, ITALIC_MARKDOWN, ITALIC_MARKDOWN),
+      @Deprecated(since = "2021.1.3", forRemoval = true)
       YOUTRACK_WIKI(END_LINE_MARKDOWN, BOLD_YOUTRACK_WIKI, BOLD_YOUTRACK_WIKI, ITALIC_YOUTRACK_WIKI, ITALIC_YOUTRACK_WIKI);
 
       final String myEndLine;
@@ -449,23 +451,16 @@ public class BlameDialog extends DialogWrapper {
     }
 
     if (!myDoNotIncludeAppInfo.isSelected()) {
-      // YouTrack wiki format required for hidden issues for now
-      description.append(AppInfo.getApplicationInfo(
-          myHiddenCheckBox.isSelected() ? AppInfo.Format.YOUTRACK_WIKI : AppInfo.Format.MARK_DOWN,
-          myPluginDescriptor));
+      description.append(AppInfo.getApplicationInfo(AppInfo.Format.MARK_DOWN, myPluginDescriptor));
     }
 
     if (!myThrowableList.isEmpty()) {
       if (!mySkipTrace.isSelected()) {
         for (Throwable ex : myThrowableList) {
           description.append("\n\n");
-          if(!myHiddenCheckBox.isSelected()) { // YouTrack wiki supports stacktrace without text markup
-            description.append("```stacktrace\n");
-          }
+          description.append("```stacktrace\n");
           description.append(ex2str(ex));
-          if(!myHiddenCheckBox.isSelected()) {
-            description.append("\n```");
-          }
+          description.append("\n```");
         }
       } else {
         description.append("Exception trace was hidden by submitter\n");
