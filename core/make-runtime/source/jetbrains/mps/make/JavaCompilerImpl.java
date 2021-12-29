@@ -324,9 +324,9 @@ final class JavaCompilerImpl {
     // javac --release option: "Supported targets: 6, 7, 8, 9, 10, 11"
     final String releaseVer = compileVer.startsWith("1.") ? compileVer.substring(2) : compileVer;
     if (cycleTempCompile) {
-      return Arrays.asList("--release", releaseVer, "-g:none", "-proc:none", "-nowarn");
+      return Arrays.asList("-encoding", "UTF-8", "--release", releaseVer, "-g:none", "-proc:none", "-nowarn");
     } else {
-      return Arrays.asList("--release", releaseVer, "-g");
+      return Arrays.asList("-encoding", "UTF-8", "--release", releaseVer, "-g");
     }
   }
 
