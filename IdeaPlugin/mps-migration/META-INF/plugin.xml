@@ -2,7 +2,7 @@
   <id>jetbrains.mps.ide.migration.idea</id>
   <name>MPS Migration Support for IDEA</name>
   <description>Adds support to migrate MPS models in MPS IDEA plugin</description>
-  <version>2023.3</version>
+  <version>2024.1</version>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <idea-version since-build="233.1" until-build="241.1"/>
 

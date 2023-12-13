@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<product version="3" modelHash="33mj8tmiyfflay9b9jmo3jfnbo0ifu4">
+<product version="3" modelHash="-cvx4od0knvypydjxpq13qgpon327ic1">
   <files names="AspectDependenciesChecker.java:CheckModel_Action.java:CheckModel_ActionGroup.java:CheckModule_Action.java:CheckModule_ActionGroup.java:CheckNamespace_Action.java:CheckNamespace_ActionGroup.java:CheckProject_Action.java:CheckProject_ActionGroup.java:FindCrossTemplateReferences_Action.java:FindReferencesToNonReferenceable_Action.java:FindWrongAspectDependencies_Action.java:Modelchecker_ApplicationPlugin.java:ReferenceableConceptsChecker.java:ToolsInternalEx_ActionGroup.java:plugin.xml" />
 </product>
 

@@ -19,7 +19,7 @@
   <name>MPS Navigation Bar</name>
   <category>UI</category>
   <description>Navigation bar to support MPS model hierarchy</description>
-  <version>2023.3</version>
+  <version>2024.1</version>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <idea-version since-build="233.1" until-build="241.1"/>
   <depends>jetbrains.mps.core</depends>

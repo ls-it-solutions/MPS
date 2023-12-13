@@ -75,7 +75,7 @@
     <mkdir dir="${build.tmp}/default/branding.jar/idea" />
     <echoxml file="${build.tmp}/default/branding.jar/idea/IdeaApplicationInfo.xml">
       <component>
-        <version major="${mpsBootstrapCore.version.major}" minor="${mpsBootstrapCore.version.minor}${mpsBootstrapCore.version.bugfixNr}" eap="true" update-channel="MPS233EAP" />
+        <version major="${mpsBootstrapCore.version.major}" minor="${mpsBootstrapCore.version.minor}${mpsBootstrapCore.version.bugfixNr}" eap="true" update-channel="MPS241EAP" />
         <company name="JetBrains s.r.o." url="https://www.jetbrains.com/?fromIDE" copyrightStart="2009" />
         <build number="${build.number}" date="${date}" />
         <logo url="/splash.png" textcolor="FFFFFF" progressColor="FFFFFF" progressY="396" progressHeight="4" />

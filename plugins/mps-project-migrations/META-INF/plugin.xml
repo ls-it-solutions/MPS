@@ -5,9 +5,9 @@
         >
 <idea-plugin xmlns:xi="http://www.w3.org/2001/XInclude">
   <id>jetbrains.mps.ide.mpsmigration</id>
-  <name>Migration 2023.2</name>
+  <name>Migration 2024.1</name>
   <description>Provides actions to migrate models and languages developed using previous versions of MPS</description>
-  <version>2023.3</version>
+  <version>2024.1</version>
   <vendor url="http://www.jetbrains.com/mps/">JetBrains</vendor>
   <idea-version since-build="233.1" until-build="241.1"/>
 

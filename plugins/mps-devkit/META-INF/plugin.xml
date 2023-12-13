@@ -19,7 +19,7 @@
   <name>MPS Languages DevKit</name>
   <description>Plugin intended for Language Designers. Facilitates developing new MPS languages</description>
   <category>Custom Languages</category>
-  <version>2023.3</version>
+  <version>2024.1</version>
   <vendor url="http://www.jetbrains.com/mps/" email="support@jetbrains.com">JetBrains</vendor>
   <idea-version since-build="233.1" until-build="241.1"/>
   <depends>jetbrains.mps.ide.make</depends>

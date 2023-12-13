@@ -3,8 +3,8 @@
   <property name="build.dir" location="build" />
   <property name="build.tmp" location="${build.dir}/tmp/mpsBootstrapCore" />
   <property name="build.layout" location="${build.dir}/artifacts/mpsBootstrapCore" />
-  <property name="version.major" value="2023" />
-  <property name="version.minor" value="3" />
+  <property name="version.major" value="2024" />
+  <property name="version.minor" value="1" />
   <property name="version.bugfixNr" value="" />
   <property name="version.eap" value=" EAP" />
   <property name="version" value="${version.major}.${version.minor}${version.bugfixNr}${version.eap}" />

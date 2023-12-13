@@ -119,7 +119,7 @@
         <property id="8618885170173601779" name="head" index="2Ry0Am" />
         <child id="8618885170173601778" name="tail" index="2Ry0An" />
       </concept>
-      <concept id="2591537044435828007" name="jetbrains.mps.build.structure.BuildSource_CompilablePart" flags="ngI" index="Saw0h">
+      <concept id="2591537044435828007" name="jetbrains.mps.build.structure.BuildSource_CompilablePart" flags="ng" index="Saw0h">
         <property id="7687809870062809395" name="withKotlin" index="ZpmtF" />
       </concept>
       <concept id="2591537044435828004" name="jetbrains.mps.build.structure.BuildLayout_CompileOutputOf" flags="ng" index="Saw0i">
@@ -188,7 +188,7 @@
       <concept id="4701820937132281259" name="jetbrains.mps.build.structure.BuildCustomWorkflow" flags="ng" index="1y0Vig">
         <child id="4701820937132281260" name="parts" index="1y0Vin" />
       </concept>
-      <concept id="4701820937132344003" name="jetbrains.mps.build.structure.BuildLayout_Container" flags="ngI" index="1y1bJS">
+      <concept id="4701820937132344003" name="jetbrains.mps.build.structure.BuildLayout_Container" flags="ng" index="1y1bJS">
         <child id="7389400916848037006" name="children" index="39821P" />
       </concept>
       <concept id="5610619299013057363" name="jetbrains.mps.build.structure.BuildLayout_ImportContent" flags="ng" index="3ygNvl">
@@ -252,7 +252,7 @@
       <concept id="1133920641626" name="jetbrains.mps.lang.core.structure.BaseConcept" flags="ng" index="2VYdi">
         <property id="1193676396447" name="virtualPackage" index="3GE5qa" />
       </concept>
-      <concept id="1169194658468" name="jetbrains.mps.lang.core.structure.INamedConcept" flags="ngI" index="TrEIO">
+      <concept id="1169194658468" name="jetbrains.mps.lang.core.structure.INamedConcept" flags="ng" index="TrEIO">
         <property id="1169194664001" name="name" index="TrG5h" />
       </concept>
     </language>
@@ -2099,8 +2099,8 @@
       <property role="TrG5h" value="version.major" />
       <node concept="aVJcg" id="3AMbuf1a7Oc" role="aVJcv">
         <node concept="NbPM2" id="3AMbuf1a7Od" role="aVJcq">
-          <node concept="3Mxwew" id="4$Jpg3da3F_" role="3MwsjC">
-            <property role="3MwjfP" value="2023" />
+          <node concept="3Mxwew" id="6sLRakuglFH" role="3MwsjC">
+            <property role="3MwjfP" value="2024" />
           </node>
         </node>
       </node>
@@ -2110,7 +2110,7 @@
       <node concept="aVJcg" id="3AMbuf1a7Og" role="aVJcv">
         <node concept="NbPM2" id="3AMbuf1a7Oh" role="aVJcq">
           <node concept="3Mxwew" id="R7riyKzrv3" role="3MwsjC">
-            <property role="3MwjfP" value="3" />
+            <property role="3MwjfP" value="1" />
           </node>
         </node>
       </node>
@@ -29284,7 +29284,7 @@
         </node>
         <node concept="NbPM2" id="6Iq8148f_YW" role="HFWMp">
           <node concept="3Mxwew" id="2$8uTVzLlTJ" role="3MwsjC">
-            <property role="3MwjfP" value="MPS233EAP" />
+            <property role="3MwjfP" value="MPS241EAP" />
           </node>
         </node>
       </node>
