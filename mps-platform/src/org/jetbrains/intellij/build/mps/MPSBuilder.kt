@@ -1,5 +1,7 @@
 package org.jetbrains.intellij.build.mps
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.intellij.build.BuildOptions
 import org.jetbrains.intellij.build.BuildTasks
 import org.jetbrains.intellij.build.OsFamily
@@ -16,11 +18,12 @@ class MPSBuilder {
         fun main(args: Array<String>) {
             val home = args[0]
 
-            val options = BuildOptions()
+            val options = BuildOptions(
+                validateImplicitPlatformModule = false,
+            )
             options.incrementalCompilation = true
             options.useCompiledClassesFromProjectOutput = false
             options.targetOs = OsFamily.ALL
-            options.validateImplicitPlatformModule = false
             options.buildStepsToSkip.add(BuildOptions.MAC_SIGN_STEP)
             options.buildStepsToSkip.add(BuildOptions.MAC_NOTARIZE_STEP)
 
@@ -30,28 +33,31 @@ class MPSBuilder {
                     featureUsageStatisticsProperties = listOf(fusp), licenseServerHost = null
             )
 
-            val buildContext = BuildContextImpl.createContextBlocking(
-                BuildDependenciesCommunityRoot(Path.of("$home/community")),
-                Path.of(home),
-                MPSProperties(),
-                buildTools,
-                options
-            )
-
-            val buildTasks = BuildTasks.create(buildContext)
-            buildTasks.compileProjectAndTests(
-                listOf(
-                    "intellij.platform.jps.build",
-                    "intellij.platform.jps.build.tests",
-                    "intellij.platform.jps.model.tests",
-                    "intellij.platform.jps.model.serialization.tests"
+            runBlocking(Dispatchers.Default) {
+                val buildContext = BuildContextImpl.createContext(
+                    communityHome = BuildDependenciesCommunityRoot(Path.of("$home/community")),
+                    projectHome = Path.of(home),
+                    productProperties = MPSProperties(),
+                    proprietaryBuildTools = buildTools,
+                    options = options
                 )
-            )
-            buildTasks.buildDistributionsBlocking()
+    
+                val buildTasks = BuildTasks.create(buildContext)
+                buildTasks.compileProjectAndTests(
+                    listOf(
+                        "intellij.platform.jps.build",
+                        "intellij.platform.jps.build.tests",
+                        "intellij.platform.jps.model.tests",
+                        "intellij.platform.jps.model.serialization.tests"
+                    )
+                )
+    
+                buildTasks.buildDistributions()
 
-            val jpsArtifactDir = "$buildContext.paths.distAll/lib/jps"
-            val jpsArtifactPath = Path.of(jpsArtifactDir)
-            buildContext.notifyArtifactBuilt(jpsArtifactPath)
+                val jpsArtifactDir = "$buildContext.paths.distAll/lib/jps"
+                val jpsArtifactPath = Path.of(jpsArtifactDir)
+                buildContext.notifyArtifactBuilt(jpsArtifactPath)
+            }
         }
     }
 }
