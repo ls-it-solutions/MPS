@@ -6,6 +6,8 @@ import com.intellij.codeWithMe.ClientId
 import com.intellij.ide.IdeBundle
 import com.intellij.ide.impl.*
 import com.intellij.ide.impl.TrustedProjectsStatistics.NEW_PROJECT_OPEN_OR_IMPORT_CHOICE
+import com.intellij.ide.trustedProjects.TrustedProjects
+import com.intellij.ide.trustedProjects.TrustedProjectsLocator
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.ApplicationNamesInfo
 import com.intellij.openapi.application.EDT
@@ -44,7 +46,8 @@ object OpenMPSProjectTrustProjectHelper {
         }
         val tp: TrustedPaths = TrustedPaths.getInstance()
         val state = tp.getProjectPathTrustedState(file)
-        if (state != ThreeState.YES && !isProjectImplicitlyTrusted(file)) {
+        val locatedProject = TrustedProjectsLocator.locateProject(projectRoot =  file, null)
+        if (state != ThreeState.YES && !TrustedProjects.isProjectTrusted(locatedProject)) {
             // need for a dialog to have the user confirm trusting the project
             val title: @NlsContexts.DialogTitle String = IdeBundle.message("untrusted.project.open.dialog.title", file)
             val message: @NlsContexts.DialogMessage String = DynamicBundle(MPSRecentProjectsManagerBase::class.java,"messages.MPSIdeBundle").getMessage(
