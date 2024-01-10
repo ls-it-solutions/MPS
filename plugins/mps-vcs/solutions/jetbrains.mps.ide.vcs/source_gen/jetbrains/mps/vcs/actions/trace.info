@@ -195,19 +195,19 @@
   </root>
   <root nodeRef="r:b2d164a2-987a-4229-af85-1f4f7d3ef996(jetbrains.mps.vcs.actions)/8537482397936092406">
     <file name="SetExtensionChangesGroupingAction.java">
-      <node id="8537482397936099278" at="15,34,16,53" concept="7" />
-      <node id="8537482397936101546" at="19,48,20,20" concept="2" />
-      <node id="8537482397936103943" at="20,20,21,45" concept="2" />
-      <node id="8537482397936113406" at="21,45,22,51" concept="2" />
-      <node id="8537482397936096275" at="13,0,18,0" concept="5" trace="getGroupingKey#()Ljava/lang/String;" />
-      <node id="8537482397936101535" at="18,0,24,0" concept="5" trace="update#(Lcom/intellij/openapi/actionSystem/AnActionEvent;)V" />
-      <scope id="8537482397936096280" at="15,34,16,53" />
-      <scope id="8537482397936101542" at="19,48,22,51" />
-      <scope id="8537482397936096275" at="13,0,18,0" />
-      <scope id="8537482397936101535" at="18,0,24,0">
+      <node id="8537482397936099278" at="14,34,15,23" concept="7" />
+      <node id="8537482397936101546" at="18,48,19,20" concept="2" />
+      <node id="8537482397936103943" at="19,20,20,45" concept="2" />
+      <node id="8537482397936113406" at="20,45,21,51" concept="2" />
+      <node id="8537482397936096275" at="12,0,17,0" concept="5" trace="getGroupingKey#()Ljava/lang/String;" />
+      <node id="8537482397936101535" at="17,0,23,0" concept="5" trace="update#(Lcom/intellij/openapi/actionSystem/AnActionEvent;)V" />
+      <scope id="8537482397936096280" at="14,34,15,23" />
+      <scope id="8537482397936101542" at="18,48,21,51" />
+      <scope id="8537482397936096275" at="12,0,17,0" />
+      <scope id="8537482397936101535" at="17,0,23,0">
         <var name="e" id="8537482397936101539" />
       </scope>
-      <unit id="8537482397936092406" at="11,0,25,0" name="jetbrains.mps.vcs.actions.SetExtensionChangesGroupingAction" />
+      <unit id="8537482397936092406" at="10,0,24,0" name="jetbrains.mps.vcs.actions.SetExtensionChangesGroupingAction" />
     </file>
   </root>
 </debug-info>
